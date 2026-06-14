@@ -1,0 +1,97 @@
+{% extends 'accounts/base.html' %}
+
+{% block title %}Edit {{ product.name }} - Evolvoria{% endblock %}
+
+{% block content %}
+<div class="glass-card" style="max-width: 600px;">
+    <div class="card-header">
+        <h2 class="card-title">Edit Product</h2>
+        <p class="card-subtitle">Modify the details of product: <strong>{{ product.name }}</strong></p>
+    </div>
+
+    <form method="POST" action="{% url 'edit_product' product.id %}" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="name" class="form-label">Product Name</label>
+            <input type="text" id="name" name="name" class="form-control" placeholder="Enter product name" required value="{{ product.name }}">
+            {% if errors.name %}
+                <div class="form-error-text">{{ errors.name }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="description" class="form-label">Description</label>
+            <textarea id="description" name="description" class="form-control" rows="4" placeholder="Detail specifications, functionality..." required style="resize: vertical;">{{ product.description }}</textarea>
+            {% if errors.description %}
+                <div class="form-error-text">{{ errors.description }}</div>
+            {% endif %}
+        </div>
+
+        <div style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
+            <div class="form-group" style="flex: 1; min-width: 120px;">
+                <label for="price" class="form-label">Price ($)</label>
+                <input type="number" step="0.01" id="price" name="price" class="form-control" placeholder="0.00" required value="{{ product.price }}">
+                {% if errors.price %}
+                    <div class="form-error-text">{{ errors.price }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group" style="flex: 1; min-width: 120px;">
+                <label for="stock" class="form-label">Stock Quantity</label>
+                <input type="number" id="stock" name="stock" class="form-control" placeholder="0" required value="{{ product.stock }}">
+                {% if errors.stock %}
+                    <div class="form-error-text">{{ errors.stock }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--glass-border); border-radius: 16px; padding: 1.25rem; margin-bottom: 1.5rem;">
+            <h3 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary);">Category Selection</h3>
+            
+            <div class="form-group">
+                <label for="category_id" class="form-label">Choose Existing Category</label>
+                <select id="category_id" name="category_id" class="form-control" style="background-color: var(--bg-secondary);">
+                    {% for cat in categories %}
+                        <option value="{{ cat.id }}" {% if product.category.id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="text-align: center; color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1rem; position: relative;">
+                <span style="background: var(--bg-primary); padding: 0 8px; position: relative; z-index: 2;">OR CREATE NEW</span>
+                <div style="border-top: 1px dashed var(--glass-border); position: absolute; width: 100%; top: 50%; left: 0; z-index: 1;"></div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="new_category_name" class="form-label">New Category Name</label>
+                <input type="text" id="new_category_name" name="new_category_name" class="form-control" placeholder="e.g. Graphic Cards">
+            </div>
+            {% if errors.category %}
+                <div class="form-error-text" style="margin-top: 0.5rem;">{{ errors.category }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group" style="display: flex; flex-direction: column; gap: 8px;">
+            <label class="form-label">Current Product Image</label>
+            <div style="width: 120px; height: 120px; border-radius: 8px; overflow: hidden; background: rgba(0,0,0,0.1); border: 1px solid var(--glass-border);">
+                <img src="{{ product.image_url }}" alt="{{ product.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            
+            <label for="image" class="form-label" style="margin-top: 0.5rem;">Upload New Image (Optional)</label>
+            <input type="file" id="image" name="image" class="form-control" accept="image/*" style="padding-top: 0.6rem;">
+            {% if errors.image %}
+                <div class="form-error-text">{{ errors.image }}</div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn-gradient" style="margin-top: 1.5rem;">
+            Save Changes
+        </button>
+
+        <a href="{% url 'product_detail' product.id %}" class="btn-secondary" style="margin-top: 0.75rem; text-decoration: none;">
+            Cancel
+        </a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends 'dashboard/dash_base.html' %}
+
+{% block dash_title %}User Profile{% endblock %}
+{% block topbar_title %}User Profile{% endblock %}
+
+{% block dash_content %}
+<!-- Page Header -->
+<div class="dash-page-header">
+    <div>
+        <h2>User Profile</h2>
+        <p>Manage your personal account details</p>
+    </div>
+</div>
+
+<!-- Profile Card -->
+<div class="dash-form-card" style="max-width: 600px; margin: 0 auto;">
+    {% if user and user.is_authenticated %}
+        <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--glass-border); border-radius: 16px; padding: 2rem; margin-bottom: 2rem; display: flex; flex-direction: column; align-items: center; gap: 1.5rem;">
+            <!-- Avatar Circle -->
+            <div style="width: 96px; height: 96px; background: linear-gradient(135deg, var(--accent-primary), var(--accent-primary-container)); border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 8px 24px rgba(70, 72, 212, 0.25); border: 3px solid rgba(255,255,255,0.8);">
+                <span style="font-size: 2.5rem; font-weight: 800; color: white; font-family: 'Plus Jakarta Sans', sans-serif;">{{ user.username|slice:":1"|upper }}</span>
+            </div>
+            
+            <div style="text-align: center;">
+                <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin: 0 0 4px 0; font-family: 'Plus Jakarta Sans', sans-serif;">{{ user.username }}</h3>
+                <p style="color: var(--text-secondary); font-size: 0.95rem; margin: 0;">{{ user.email }}</p>
+            </div>
+
+            <!-- Detail Rows -->
+            <div style="width: 100%; display: flex; flex-direction: column; gap: 1.25rem; font-size: 0.95rem; margin-top: 1rem; border-top: 1px solid rgba(199, 196, 215, 0.3); padding-top: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--glass-border); padding-bottom: 0.75rem;">
+                    <span style="color: var(--text-secondary); font-weight: 500;">Username</span>
+                    <span style="color: var(--text-primary); font-weight: 600;">{{ user.username }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--glass-border); padding-bottom: 0.75rem;">
+                    <span style="color: var(--text-secondary); font-weight: 500;">Email Address</span>
+                    <span style="color: var(--text-primary); font-weight: 600;">{{ user.email }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--glass-border); padding-bottom: 0.75rem;">
+                    <span style="color: var(--text-secondary); font-weight: 500;">Date Joined</span>
+                    <span style="color: var(--text-primary); font-weight: 600;">{{ user.date_joined|date:"F d, Y" }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--glass-border); padding-bottom: 0.75rem;">
+                    <span style="color: var(--text-secondary); font-weight: 500;">Last Login</span>
+                    <span style="color: var(--text-primary); font-weight: 600;">{{ user.last_login|date:"F d, Y @ H:i"|default:"Never" }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.5rem;">
+                    <span style="color: var(--text-secondary); font-weight: 500;">Account Role</span>
+                    <span style="background: rgba(70, 72, 212, 0.1); border: 1px solid rgba(70, 72, 212, 0.2); color: var(--accent-primary); padding: 0.3rem 0.8rem; border-radius: 50px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Admin / Staff</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
+            <a href="{% url 'change_password' %}" class="btn-dash-primary" style="text-decoration: none; justify-content: center; width: 100%;">
+                <span class="material-symbols-outlined">lock</span>
+                Change Password
+            </a>
+            <a href="{% url 'admin_dashboard' %}" class="btn-dash-outline" style="text-decoration: none; justify-content: center; width: 100%;">
+                <span class="material-symbols-outlined">arrow_back</span>
+                Back to Dashboard
+            </a>
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 2rem 0;">
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">You must be logged in to view this profile.</p>
+            <a href="{% url 'login' %}" class="btn-dash-primary" style="text-decoration: none; justify-content: center;">Log In</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

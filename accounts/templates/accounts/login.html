@@ -1,0 +1,43 @@
+{% extends 'accounts/base.html' %}
+
+{% block title %}Log In - Evolvoria{% endblock %}
+
+{% block content %}
+<div class="glass-card">
+    <div class="card-header">
+        <h2 class="card-title">Welcome Back</h2>
+        <p class="card-subtitle">Log in to manage your Evolvoria account</p>
+    </div>
+
+    <form method="POST" action="{% url 'login' %}" novalidate>
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" id="username" name="username" class="form-control" placeholder="Enter username" required value="{{ username|default:'' }}">
+            {% if errors.username %}
+                <div class="form-error-text">{{ errors.username }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <label for="password" class="form-label" style="margin-bottom: 0;">Password</label>
+                <a href="{% url 'forget_password' %}" style="font-size: 0.85rem; color: var(--accent-primary); text-decoration: none; font-weight: 500;">Forgot?</a>
+            </div>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Enter password" required>
+            {% if errors.password %}
+                <div class="form-error-text">{{ errors.password }}</div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn-gradient" style="margin-top: 1.5rem;">
+            Log In
+        </button>
+    </form>
+
+    <div class="card-footer-text">
+        Don't have an account? <a href="{% url 'register' %}">Sign Up</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,157 @@
+{% extends 'accounts/user_dash_base.html' %}
+
+{% block dash_title %}Order Details #{{ order.id }}{% endblock %}
+{% block topbar_title %}Order Tracking{% endblock %}
+
+{% block dash_content %}
+<!-- Back link & Cancel button -->
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 12px;">
+    <a href="{% url 'my_orders' %}" class="btn-dash-outline" style="text-decoration: none; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 8px;">
+        <span class="material-symbols-outlined" style="font-size: 18px;">arrow_back</span>
+        Back to My Orders
+    </a>
+    
+    {% if order.status == 'Pending' %}
+        <form action="{% url 'cancel_order' order.id %}" method="POST" style="margin: 0;" onsubmit="return confirm('Are you sure you want to cancel this order? Placed items stock will be restored.');">
+            {% csrf_token %}
+            <button type="submit" class="btn-dash-outline" style="color: var(--accent-error); border-color: rgba(186, 26, 26, 0.3); background: rgba(186, 26, 26, 0.02); display: inline-flex; align-items: center; gap: 6px; cursor: pointer; border-radius: 10px; font-weight: 600; padding: 10px 20px;">
+                <span class="material-symbols-outlined" style="font-size: 18px;">cancel</span>
+                Cancel Order
+            </button>
+        </form>
+    {% endif %}
+</div>
+
+<!-- Tracking Timeline Card -->
+<div class="dash-panel" style="padding: 2rem; margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h2 style="font-size: 1.5rem; font-weight: 800; font-family: 'Plus Jakarta Sans', sans-serif; margin: 0;">Track Order #{{ order.id }}</h2>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 4px 0 0 0;">Placed on {{ order.created_at|date:"F d, Y @ H:i" }}</p>
+        </div>
+        
+        <div style="text-align: right;">
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0 0 4px 0;">Grand Total</p>
+            <span style="font-size: 1.5rem; font-weight: 800; color: var(--accent-primary);">${{ order.total_price }}</span>
+        </div>
+    </div>
+
+    <!-- Visual Progress Timeline or Cancelled Banner -->
+    {% if order.status == 'Cancelled' %}
+    <div style="background: rgba(186, 26, 26, 0.08); border: 1px solid rgba(186, 26, 26, 0.25); border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem; margin-top: 1rem;">
+        <div style="width: 48px; height: 48px; border-radius: 50%; background: rgba(186, 26, 26, 0.15); display: flex; justify-content: center; align-items: center; color: var(--accent-error); flex-shrink: 0;">
+            <span class="material-symbols-outlined" style="font-size: 28px;">cancel</span>
+        </div>
+        <div>
+            <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--accent-error); margin: 0; font-family: 'Plus Jakarta Sans', sans-serif;">This order has been cancelled</h3>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 4px 0 0 0; line-height: 1.4;">
+                This order was cancelled, and its status is locked. Any items placed in this order have been successfully returned to inventory stock. If you need any assistance or have questions, please contact support.
+            </p>
+        </div>
+    </div>
+    {% else %}
+    <div style="display: flex; justify-content: space-between; align-items: center; position: relative; margin: 2rem 1rem 1rem 1rem; flex-direction: row;">
+        <!-- Progress Line Background -->
+        <div style="position: absolute; top: 15px; left: 0; width: 100%; height: 4px; background: var(--glass-border); z-index: 1;"></div>
+        
+        <!-- Active Progress Line -->
+        <div style="position: absolute; top: 15px; left: 0; height: 4px; background: linear-gradient(90deg, var(--accent-primary), var(--accent-success)); z-index: 2; width: {% if order.status == 'Pending' %}0%{% elif order.status == 'Shipped' %}50%{% else %}100%{% endif %}; transition: width 0.5s ease;"></div>
+
+        <!-- Timeline Step 1: Pending -->
+        <div style="position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+            <div style="width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid {% if order.status == 'Pending' or order.status == 'Shipped' or order.status == 'Delivered' %}var(--accent-primary){% else %}var(--glass-border){% endif %}; background: {% if order.status == 'Pending' or order.status == 'Shipped' or order.status == 'Delivered' %}var(--bg-secondary){% else %}var(--bg-primary){% endif %}; color: {% if order.status == 'Pending' or order.status == 'Shipped' or order.status == 'Delivered' %}var(--accent-primary){% else %}var(--text-secondary){% endif %}; font-weight: bold; font-size: 0.85rem;">
+                1
+            </div>
+            <span style="font-size: 0.85rem; font-weight: 600; color: {% if order.status == 'Pending' or order.status == 'Shipped' or order.status == 'Delivered' %}var(--text-primary){% else %}var(--text-secondary){% endif %};">
+                Pending
+            </span>
+        </div>
+
+        <!-- Timeline Step 2: Shipped -->
+        <div style="position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+            <div style="width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid {% if order.status == 'Shipped' or order.status == 'Delivered' %}var(--accent-primary){% else %}var(--glass-border){% endif %}; background: {% if order.status == 'Shipped' or order.status == 'Delivered' %}var(--bg-secondary){% else %}var(--bg-primary){% endif %}; color: {% if order.status == 'Shipped' or order.status == 'Delivered' %}var(--accent-primary){% else %}var(--text-secondary){% endif %}; font-weight: bold; font-size: 0.85rem;">
+                2
+            </div>
+            <span style="font-size: 0.85rem; font-weight: 600; color: {% if order.status == 'Shipped' or order.status == 'Delivered' %}var(--text-primary){% else %}var(--text-secondary){% endif %};">
+                Shipped
+            </span>
+        </div>
+
+        <!-- Timeline Step 3: Delivered -->
+        <div style="position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+            <div style="width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid {% if order.status == 'Delivered' %}var(--accent-success){% else %}var(--glass-border){% endif %}; background: {% if order.status == 'Delivered' %}var(--bg-secondary){% else %}var(--bg-primary){% endif %}; color: {% if order.status == 'Delivered' %}var(--accent-success){% else %}var(--text-secondary){% endif %}; font-weight: bold; font-size: 0.85rem;">
+                3
+            </div>
+            <span style="font-size: 0.85rem; font-weight: 600; color: {% if order.status == 'Delivered' %}var(--accent-success){% else %}var(--text-secondary){% endif %};">
+                Delivered
+            </span>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<div style="display: flex; gap: 2rem; flex-wrap: wrap; align-items: flex-start;">
+    <!-- Left: Items Breakdown -->
+    <div style="flex: 1.8; min-width: 320px; display: flex; flex-direction: column; gap: 1.5rem; width: 100%;">
+        <div class="dash-panel" style="padding: 2rem;">
+            <h2 style="font-size: 1.35rem; font-weight: 700; margin-bottom: 1.5rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem; font-family: 'Plus Jakarta Sans', sans-serif;">
+                Items Placed
+            </h2>
+
+            <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                {% for item in order.items.all %}
+                    <div style="display: flex; align-items: center; gap: 1rem; border-bottom: 1px dashed var(--glass-border); padding-bottom: 1rem;">
+                        <!-- Image -->
+                        <div style="width: 64px; height: 64px; border-radius: 8px; overflow: hidden; background: rgba(0,0,0,0.1); border: 1px solid var(--glass-border); flex-shrink: 0;">
+                            <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        
+                        <!-- Metadata -->
+                        <div style="flex: 1;">
+                            <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin: 0;">
+                                {% if item.product %}
+                                    <a href="{% url 'product_detail' item.product.id %}" style="text-decoration: none; color: inherit;">{{ item.product.name }}</a>
+                                {% else %}
+                                    Deleted Product
+                                {% endif %}
+                            </h4>
+                            <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 2px 0 0 0;">
+                                Category: {{ item.product.category.name|default:"General" }}
+                            </p>
+                            <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 4px 0 0 0;">
+                                Qty: <span style="font-weight: 600; color: var(--text-primary);">{{ item.quantity }}</span> @ ${{ item.price }} each
+                            </p>
+                        </div>
+
+                        <!-- Subtotal -->
+                        <div style="text-align: right; font-weight: 800; color: var(--text-primary); font-size: 1.05rem;">
+                            ${{ item.subtotal }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Right: Shipping / Phone Card -->
+    <div style="flex: 1.2; min-width: 300px; width: 100%;">
+        <div class="dash-panel" style="padding: 2rem;">
+            <h2 style="font-size: 1.35rem; font-weight: 700; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem; margin-bottom: 1.5rem; font-family: 'Plus Jakarta Sans', sans-serif;">
+                Shipping Details
+            </h2>
+
+            <div style="display: flex; flex-direction: column; gap: 1.25rem; font-size: 0.95rem;">
+                <div>
+                    <span style="color: var(--text-secondary); display: block; font-size: 0.85rem; margin-bottom: 4px;">Recipient's Phone</span>
+                    <span style="font-weight: 600; color: var(--text-primary);">{{ order.phone_number }}</span>
+                </div>
+                
+                <div style="border-top: 1px dashed var(--glass-border); padding-top: 1rem;">
+                    <span style="color: var(--text-secondary); display: block; font-size: 0.85rem; margin-bottom: 4px;">Shipping Address</span>
+                    <p style="color: var(--text-primary); line-height: 1.5; white-space: pre-line; margin: 0;">{{ order.shipping_address }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

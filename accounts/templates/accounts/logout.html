@@ -1,0 +1,20 @@
+{% extends 'accounts/base.html' %}
+
+{% block title %}Logged Out - Evolvoria{% endblock %}
+
+{% block content %}
+<div class="glass-card" style="text-align: center;">
+    <div style="width: 70px; height: 70px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 1.5rem auto;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent-success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+    </div>
+    
+    <div class="card-header" style="margin-bottom: 1.5rem;">
+        <h2 class="card-title">Successfully Logged Out</h2>
+        <p class="card-subtitle">Thank you for using Evolvoria. You have signed out securely.</p>
+    </div>
+
+    <a href="{% url 'login' %}" class="btn-gradient" style="text-decoration: none;">
+        Log Back In
+    </a>
+</div>
+{% endblock %}

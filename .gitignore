@@ -1,0 +1,27 @@
+# Environments & Secrets
+.env
+venv/
+ENV/
+env/
+
+# Database
+db.sqlite3
+
+# Python cache & compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# User media / uploads
+media/
+
+# Logs
+*.log
+
+# IDE, OS & local files
+.gemini/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

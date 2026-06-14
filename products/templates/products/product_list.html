@@ -1,0 +1,462 @@
+{% extends 'accounts/base.html' %}
+
+{% block title %}Product Catalog - Evolvoria{% endblock %}
+
+{% block main_class %}full-width{% endblock %}
+
+{% block extra_head %}
+<style>
+/* Page Layout spacing */
+.catalog-container {
+    width: 100%;
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: 0 var(--margin-desktop);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: var(--stack-lg);
+    margin-bottom: var(--stack-xl);
+}
+
+@media (max-width: 768px) {
+    .catalog-container {
+        padding: 0 var(--margin-mobile);
+        gap: var(--stack-md);
+        margin-bottom: var(--stack-lg);
+    }
+}
+
+.catalog-header {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: 24px;
+    margin-top: 32px;
+}
+
+.catalog-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.catalog-header-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.catalog-layout-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--gutter);
+    align-items: start;
+    margin-top: 24px;
+}
+@media (min-width: 768px) {
+    .catalog-layout-grid {
+        grid-template-columns: 3fr 9fr;
+    }
+}
+
+/* Filter Sidebar styling */
+.filter-sidebar {
+    position: sticky;
+    top: 100px;
+    z-index: 10;
+}
+
+.filter-group {
+    margin-bottom: 24px;
+}
+
+.filter-group-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+}
+
+.filter-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filter-item-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.filter-item-link:hover {
+    color: var(--accent-primary);
+}
+
+.filter-item-link.active {
+    color: var(--accent-primary);
+    font-weight: 600;
+}
+
+.filter-bullet {
+    width: 6px;
+    height: 6px;
+    background-color: var(--accent-primary);
+    border-radius: 50%;
+}
+
+.filter-bullet-placeholder {
+    width: 6px;
+    height: 6px;
+    border: 1px solid var(--glass-border);
+    border-radius: 50%;
+}
+
+
+
+/* Catalog Product Grid & Cards styling */
+.catalog-product-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--gutter);
+}
+@media (min-width: 640px) {
+    .catalog-product-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (min-width: 1024px) {
+    .catalog-product-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.product-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    box-sizing: border-box;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 50px rgba(70, 72, 212, 0.08);
+}
+
+.product-img-wrap {
+    position: relative;
+    aspect-ratio: 4/5;
+    overflow: hidden;
+    border-radius: 16px;
+    margin-bottom: 16px;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--glass-border);
+}
+
+.product-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.product-card:hover .product-img-wrap img {
+    transform: scale(1.05);
+}
+
+.product-favorite-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+.product-favorite-btn:hover {
+    background-color: var(--accent-primary);
+    color: #ffffff;
+}
+
+.product-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.product-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 4px;
+}
+
+.product-badge-category {
+    background: rgba(130, 81, 0, 0.08);
+    border: 1px solid rgba(130, 81, 0, 0.15);
+    color: var(--accent-secondary);
+    padding: 2px 8px;
+    border-radius: 50px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.product-badge-stock {
+    padding: 2px 8px;
+    border-radius: 50px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.product-badge-stock.in-stock {
+    background: rgba(0, 108, 73, 0.08);
+    border: 1px solid rgba(0, 108, 73, 0.15);
+    color: var(--accent-success);
+}
+
+.product-badge-stock.out-of-stock {
+    background: rgba(186, 26, 26, 0.08);
+    border: 1px solid rgba(186, 26, 26, 0.15);
+    color: var(--accent-error);
+}
+
+.product-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.product-desc {
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    height: 38px;
+}
+
+.product-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--glass-border);
+    padding-top: 12px;
+    margin-top: 12px;
+}
+
+.product-price {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--accent-primary);
+}
+
+.product-details-link {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 8px;
+    background-color: var(--accent-primary);
+    color: #ffffff;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.product-details-link:hover {
+    background-color: var(--accent-primary-container);
+}
+
+/* Sidebar Search Form */
+.sidebar-search-form {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+.sidebar-search-input {
+    flex-grow: 1;
+    padding: 8px 16px !important;
+    font-size: 13px !important;
+    border-radius: 8px !important;
+    background: rgba(255, 255, 255, 0.6) !important;
+}
+.sidebar-search-input:focus {
+    background: #ffffff !important;
+}
+.btn-sidebar-search {
+    width: auto !important;
+    padding: 8px 16px !important;
+    font-size: 12px !important;
+    border-radius: 8px !important;
+    font-weight: 600;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="catalog-container">
+    <!-- Catalog Header -->
+    <div class="catalog-header">
+        <div class="catalog-header-top">
+            <div>
+                <h1 class="font-headline-lg" style="margin: 0;">The Collection</h1>
+                <p class="font-body-md text-secondary" style="margin-top: 4px;">
+                    {% if q %}
+                        Search results for "{{ q }}"
+                    {% elif selected_category %}
+                        Showing products in category "{{ selected_category.name }}"
+                    {% else %}
+                        Explore all of our high-quality components
+                    {% endif %}
+                </p>
+            </div>
+            
+            <div class="catalog-header-actions">
+                {% if user.is_authenticated and user.is_staff %}
+                    <a href="{% url 'upload_product' %}" class="btn-gradient" style="width: auto; padding: 12px 24px; font-size: 13px; border-radius: 8px;">
+                        + Upload Product
+                    </a>
+                {% endif %}
+                <a href="{% url 'home' %}" class="btn-secondary" style="width: auto; padding: 12px 24px; font-size: 13px; border-radius: 8px;">
+                    Go to Storefront
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Catalog Main Content Layout -->
+    <div class="catalog-layout-grid">
+        <!-- Filters Sidebar -->
+        <aside class="filter-sidebar">
+            <div class="glass-panel" style="padding: 24px; border-radius: 24px;">
+                <!-- Search within catalog -->
+                <form method="GET" action="{% url 'all_products' %}" class="sidebar-search-form">
+                    {% if selected_category %}
+                        <input type="hidden" name="category" value="{{ selected_category.id }}">
+                    {% endif %}
+                    <input type="text" name="q" value="{{ q }}" class="form-control sidebar-search-input" placeholder="Search catalog...">
+                    <button type="submit" class="btn-gradient btn-sidebar-search">
+                        Filter
+                    </button>
+                </form>
+
+                <!-- Category filter list -->
+                <div class="filter-group">
+                    <h3 class="filter-group-title">Category</h3>
+                    <div class="filter-list">
+                        <a href="{% url 'all_products' %}{% if q %}?q={{ q }}{% endif %}" 
+                           class="filter-item-link {% if not selected_category %}active{% endif %}">
+                            <span class="{% if not selected_category %}filter-bullet{% else %}filter-bullet-placeholder{% endif %}"></span>
+                            All Products
+                        </a>
+                        {% for cat in categories %}
+                            <a href="{% url 'all_products' %}?category={{ cat.id }}{% if q %}&q={{ q }}{% endif %}" 
+                               class="filter-item-link {% if selected_category.id == cat.id %}active{% endif %}">
+                                <span class="{% if selected_category.id == cat.id %}filter-bullet{% else %}filter-bullet-placeholder{% endif %}"></span>
+                                {{ cat.name }}
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+
+            </div>
+        </aside>
+
+        <!-- Product Grid Section -->
+        <section>
+            {% if products %}
+                <div class="catalog-product-grid">
+                    {% for product in products %}
+                        <div class="product-card">
+                            <div>
+                                <div class="product-img-wrap">
+                                    <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                                    <a href="{% url 'add_to_wishlist' product.id %}" class="product-favorite-btn" title="Add to Wishlist">
+                                        <span class="material-symbols-outlined text-[20px]">favorite</span>
+                                    </a>
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-badges">
+                                        <span class="product-badge-category">{{ product.category.name }}</span>
+                                        {% if product.stock > 0 %}
+                                            <span class="product-badge-stock in-stock">In Stock</span>
+                                        {% else %}
+                                            <span class="product-badge-stock out-of-stock">Out of Stock</span>
+                                        {% endif %}
+                                    </div>
+                                    <h4 class="product-title" title="{{ product.name }}">{{ product.name }}</h4>
+                                    <p class="product-desc">{{ product.description }}</p>
+                                </div>
+                            </div>
+                            <div class="product-footer">
+                                <span class="product-price">${{ product.price }}</span>
+                                <a href="{% url 'product_detail' product.id %}" class="product-details-link">
+                                    Details
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="glass-card" style="max-width: 100%; text-align: center; padding: 4rem 2rem; margin: 0 auto;">
+                    <div style="width: 60px; height: 60px; background: rgba(99,102,241,0.05); border: 1px solid var(--glass-border); border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 1.5rem auto;">
+                        <span class="material-symbols-outlined" style="color: var(--text-secondary); font-size: 28px;">search_off</span>
+                    </div>
+                    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; font-family: 'Plus Jakarta Sans', sans-serif;">No Products Found</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem; max-width: 400px; margin: 0 auto 1.5rem auto; line-height: 1.6;">
+                        We couldn't find any products matching your filters or query. Try resetting filters or search again.
+                    </p>
+                    <a href="{% url 'all_products' %}" class="btn-secondary" style="width: auto; display: inline-flex; padding: 0.75rem 1.5rem; margin: 0 auto;">
+                        Reset Filters
+                    </a>
+                </div>
+            {% endif %}
+        </section>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const cards = document.querySelectorAll('.product-card');
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-4px)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0px)';
+            });
+        });
+    });
+</script>
+{% endblock %}

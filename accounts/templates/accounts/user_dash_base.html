@@ -1,0 +1,594 @@
+{% extends 'accounts/base.html' %}
+
+{% block title %}{% block dash_title %}Customer Portal{% endblock %} - Evolvoria{% endblock %}
+
+{% block main_class %}full-width{% endblock %}
+
+{% block extra_head %}
+<style>
+/* ── Hide base header & footer for dashboard layout ── */
+header.site-header,
+footer.site-footer,
+.bg-blobs {
+    display: none !important;
+}
+body {
+    overflow-x: hidden;
+}
+
+/* ── Dashboard Shell ── */
+.dash-shell {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+/* ── Sidebar ── */
+.dash-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 260px;
+    height: 100vh;
+    background: rgba(252, 248, 255, 0.85);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-right: 1px solid rgba(199, 196, 215, 0.3);
+    box-shadow: 8px 0 32px rgba(70, 72, 212, 0.04);
+    display: flex;
+    flex-direction: column;
+    padding: var(--stack-lg) 0;
+    z-index: 50;
+    border-radius: 0 16px 16px 0;
+    overflow-y: auto;
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 24px;
+    margin-bottom: 40px;
+}
+.sidebar-brand-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--accent-primary-container);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    flex-shrink: 0;
+}
+.sidebar-brand-text h1 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--accent-primary);
+    margin: 0;
+    line-height: 1.1;
+}
+.sidebar-brand-text p {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin: 2px 0 0 0;
+}
+
+.sidebar-nav {
+    flex: 1;
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+}
+.sidebar-link:hover {
+    color: var(--accent-primary);
+    background: rgba(70, 72, 212, 0.06);
+}
+.sidebar-link.active {
+    color: var(--accent-primary);
+    background: rgba(70, 72, 212, 0.1);
+    font-weight: 700;
+}
+.sidebar-link.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 24px;
+    background: var(--accent-primary);
+    border-radius: 0 4px 4px 0;
+}
+.sidebar-link .material-symbols-outlined {
+    font-size: 22px;
+}
+
+/* ── Sidebar Submenu ── */
+.sidebar-submenu-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+.sidebar-submenu-toggle {
+    cursor: pointer;
+    user-select: none;
+}
+.sidebar-submenu {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    padding-left: 32px;
+    margin-top: 4px;
+    margin-bottom: 8px;
+}
+.sidebar-submenu-wrapper.open .submenu-arrow {
+    transform: rotate(180deg);
+}
+.sidebar-sublink {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+.sidebar-sublink:hover {
+    color: var(--accent-primary);
+    background: rgba(70, 72, 212, 0.05);
+}
+.sidebar-sublink.active {
+    color: var(--accent-primary);
+    background: rgba(70, 72, 212, 0.08);
+    font-weight: 700;
+}
+
+.sidebar-footer {
+    padding: 0 16px;
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.sidebar-storefront-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    background: var(--accent-primary);
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-sizing: border-box;
+}
+.sidebar-storefront-btn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 12px 32px rgba(70, 72, 212, 0.2);
+}
+.sidebar-storefront-btn .material-symbols-outlined {
+    font-size: 18px;
+}
+
+/* ── Main Content Area ── */
+.dash-main {
+    margin-left: 260px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: var(--bg-primary);
+}
+
+/* ── Top App Bar ── */
+.dash-topbar {
+    height: 72px;
+    background: rgba(252, 248, 255, 0.85);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-bottom: 1px solid rgba(199, 196, 215, 0.3);
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 var(--margin-desktop);
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+.topbar-page-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    white-space: nowrap;
+}
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+.topbar-divider {
+    width: 1px;
+    height: 28px;
+    background: rgba(199, 196, 215, 0.5);
+}
+.topbar-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.topbar-user-info {
+    text-align: right;
+}
+.topbar-user-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1;
+}
+.topbar-user-role {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 3px 0 0 0;
+}
+.topbar-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(70, 72, 212, 0.2);
+}
+
+/* ── Dashboard Content ── */
+.dash-content {
+    padding: var(--margin-desktop);
+    max-width: var(--container-max);
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: var(--stack-xl);
+    flex: 1;
+}
+
+/* ── Page Header Row ── */
+.dash-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+.dash-page-header h2 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+.dash-page-header p {
+    font-size: 15px;
+    color: var(--text-secondary);
+    margin: 4px 0 0 0;
+}
+.dash-page-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* ── Shared Glass Panel ── */
+.dash-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px rgba(99, 102, 241, 0.08);
+    border-radius: 20px;
+    overflow: hidden;
+}
+.dash-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px;
+    border-bottom: 1px solid rgba(199, 196, 215, 0.3);
+}
+.dash-panel-header h4 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text-primary);
+}
+.dash-panel-body {
+    padding: 24px;
+}
+
+/* ── Shared Button Styles ── */
+.btn-dash-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-primary-container));
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 15px rgba(70, 72, 212, 0.15);
+}
+.btn-dash-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(70, 72, 212, 0.25);
+}
+.btn-dash-primary .material-symbols-outlined { font-size: 18px; }
+
+.btn-dash-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    background: transparent;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+.btn-dash-outline:hover {
+    background: rgba(70, 72, 212, 0.05);
+    color: var(--accent-primary);
+    border-color: var(--glass-border-focus);
+}
+
+.btn-dash-block {
+    width: 100%;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.dash-form-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 32px;
+    max-width: 700px;
+    width: 100%;
+    margin: 0 auto;
+    box-shadow: 0 8px 32px rgba(99, 102, 241, 0.08);
+}
+.dash-form-card h2 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+}
+.dash-form-card .subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0 0 24px 0;
+}
+
+/* ── Dashboard Footer ── */
+.dash-footer {
+    margin-top: auto;
+    padding: 20px var(--margin-desktop);
+    border-top: 1px solid rgba(199, 196, 215, 0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.dash-footer-links {
+    display: flex;
+    gap: 24px;
+}
+.dash-footer-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+.dash-footer-links a:hover {
+    color: var(--accent-primary);
+}
+
+/* Status badges */
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-block;
+}
+.status-pending  { background: rgba(163, 103, 0, 0.1); color: var(--accent-warning); }
+.status-shipped  { background: rgba(0, 108, 73, 0.1); color: var(--accent-success); }
+.status-delivered { background: rgba(70, 72, 212, 0.1); color: var(--accent-primary); }
+.status-cancelled { background: rgba(186, 26, 26, 0.1); color: var(--accent-error); }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .dash-sidebar { display: none; }
+    .dash-main { margin-left: 0; }
+    .topbar-user-info { display: none; }
+    .dash-page-header h2 { font-size: 24px; }
+    .dash-page-actions { flex-wrap: wrap; }
+}
+</style>
+{% block dash_extra_head %}{% endblock %}
+{% endblock %}
+
+{% block content %}
+<div class="dash-shell">
+    <!-- Sidebar Navigation -->
+    <aside class="dash-sidebar">
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-icon">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person_play</span>
+            </div>
+            <div class="sidebar-brand-text">
+                <h1>Evolvoria</h1>
+                <p>Customer Portal</p>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="{% url 'dashboard' %}" class="sidebar-link {% if active_tab == 'overview' %}active{% endif %}">
+                <span class="material-symbols-outlined">dashboard</span>
+                Overview
+            </a>
+            <a href="{% url 'my_orders' %}" class="sidebar-link {% if active_tab == 'orders' %}active{% endif %}">
+                <span class="material-symbols-outlined">local_shipping</span>
+                My Orders
+            </a>
+            <a href="{% url 'view_cart' %}" class="sidebar-link {% if active_tab == 'cart' %}active{% endif %}">
+                <span class="material-symbols-outlined">shopping_cart</span>
+                My Cart
+            </a>
+            <a href="{% url 'wishlist_detail' %}" class="sidebar-link {% if active_tab == 'wishlist' %}active{% endif %}">
+                <span class="material-symbols-outlined">favorite</span>
+                My Wishlist
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="{% url 'home' %}" class="sidebar-storefront-btn">
+                View Storefront
+                <span class="material-symbols-outlined">open_in_new</span>
+            </a>
+            
+            <!-- Settings sub-navigation -->
+            <div class="sidebar-submenu-wrapper {% if active_tab == 'settings' %}open{% endif %}">
+                <div class="sidebar-link sidebar-submenu-toggle" onclick="toggleSubmenu(this)">
+                    <span class="material-symbols-outlined">settings</span>
+                    Settings
+                    <span class="material-symbols-outlined submenu-arrow" style="margin-left: auto; font-size: 16px; transition: transform 0.3s;">keyboard_arrow_down</span>
+                </div>
+                <div class="sidebar-submenu" style="{% if active_tab == 'settings' %}display: flex;{% else %}display: none;{% endif %}">
+                    <a href="{% url 'profile' %}" class="sidebar-sublink {% if active_sub_tab == 'profile' %}active{% endif %}">
+                        <span class="material-symbols-outlined" style="font-size: 18px;">person</span>
+                        User Profile
+                    </a>
+                    <a href="{% url 'change_password' %}" class="sidebar-sublink {% if active_sub_tab == 'change_password' %}active{% endif %}">
+                        <span class="material-symbols-outlined" style="font-size: 18px;">lock</span>
+                        Change Password
+                    </a>
+                </div>
+            </div>
+
+            <a href="{% url 'logout' %}" class="sidebar-link">
+                <span class="material-symbols-outlined">logout</span>
+                Logout
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="dash-main">
+        <!-- Top App Bar -->
+        <header class="dash-topbar">
+            <div class="topbar-left">
+                <h3 class="topbar-page-title">{% block topbar_title %}Dashboard{% endblock %}</h3>
+            </div>
+            <div class="topbar-actions">
+                <div class="topbar-divider"></div>
+                <div class="topbar-user">
+                    <div class="topbar-user-info">
+                        <p class="topbar-user-name">{{ user.username }}</p>
+                        <p class="topbar-user-role">Customer</p>
+                    </div>
+                    <img class="topbar-avatar" src="https://api.dicebear.com/7.x/fun-emoji/svg?seed={{ user.username }}" alt="{{ user.username }}">
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <section class="dash-content">
+            {% block dash_content %}{% endblock %}
+        </section>
+
+        <!-- Dashboard Footer -->
+        <footer class="dash-footer">
+            <p>&copy; 2026 Evolvoria Commerce Platform. All rights reserved.</p>
+            <div class="dash-footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+        </footer>
+    </div>
+</div>
+
+<script>
+function toggleSubmenu(elem) {
+    const wrapper = elem.parentElement;
+    const submenu = wrapper.querySelector('.sidebar-submenu');
+    const arrow = elem.querySelector('.submenu-arrow');
+    const isOpen = wrapper.classList.contains('open');
+    if (isOpen) {
+        submenu.style.display = 'none';
+        arrow.style.transform = 'rotate(0deg)';
+        wrapper.classList.remove('open');
+    } else {
+        submenu.style.display = 'flex';
+        arrow.style.transform = 'rotate(180deg)';
+        wrapper.classList.add('open');
+    }
+}
+</script>
+{% endblock %}

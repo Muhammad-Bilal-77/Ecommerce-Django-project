@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Evolvoria Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                "on-primary": "#ffffff",
+                "surface-container-lowest": "#ffffff",
+                "on-tertiary": "#ffffff",
+                "on-tertiary-fixed-variant": "#653e00",
+                "on-primary-fixed": "#07006c",
+                "surface-variant": "#e4e1ed",
+                "surface-tint": "#494bd6",
+                "surface-container-high": "#e9e6f3",
+                "surface-container": "#efecf8",
+                "secondary-fixed": "#6ffbbe",
+                "on-secondary-container": "#00714d",
+                "on-error": "#ffffff",
+                "on-secondary-fixed-variant": "#005236",
+                "on-secondary-fixed": "#002113",
+                "error-container": "#ffdad6",
+                "on-background": "#1b1b23",
+                "surface": "#fcf8ff",
+                "inverse-surface": "#303038",
+                "outline": "#767586",
+                "secondary": "#006c49",
+                "on-surface-variant": "#464554",
+                "on-primary-fixed-variant": "#2f2ebe",
+                "on-error-container": "#93000a",
+                "primary-fixed": "#e1e0ff",
+                "on-surface": "#1b1b23",
+                "inverse-primary": "#c0c1ff",
+                "on-tertiary-fixed": "#2a1700",
+                "surface-container-low": "#f5f2fe",
+                "error": "#ba1a1a",
+                "secondary-fixed-dim": "#4edea3",
+                "primary": "#4648d4",
+                "on-primary-container": "#fffbff",
+                "secondary-container": "#6cf8bb",
+                "tertiary": "#825100",
+                "tertiary-fixed": "#ffddb8",
+                "tertiary-container": "#a36700",
+                "surface-dim": "#dbd8e4",
+                "primary-container": "#6063ee",
+                "outline-variant": "#c7c4d7",
+                "tertiary-fixed-dim": "#ffb95f",
+                "primary-fixed-dim": "#c0c1ff",
+                "on-tertiary-container": "#fffbff",
+                "surface-container-highest": "#e4e1ed",
+                "on-secondary": "#ffffff",
+                "inverse-on-surface": "#f2effb",
+                "surface-bright": "#fcf8ff",
+                "background": "#fcf8ff"
+              },
+              "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+              },
+              "spacing": {
+                "container-max": "1280px",
+                "gutter": "24px",
+                "stack-xs": "4px",
+                "margin-mobile": "20px",
+                "stack-lg": "32px",
+                "stack-md": "16px",
+                "stack-sm": "8px",
+                "margin-desktop": "40px",
+                "stack-xl": "64px"
+              },
+              "fontFamily": {
+                "label-md": ["Inter"],
+                "body-lg": ["Inter"],
+                "headline-lg": ["Plus Jakarta Sans"],
+                "headline-md": ["Plus Jakarta Sans"],
+                "label-sm": ["Inter"],
+                "headline-lg-mobile": ["Plus Jakarta Sans"],
+                "display-xl": ["Plus Jakarta Sans"],
+                "body-md": ["Inter"]
+              },
+              "fontSize": {
+                "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                "headline-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                "headline-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                "display-xl": ["64px", {"lineHeight": "72px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .glass-layer {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .indigo-shadow {
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.08);
+        }
+        .indigo-glow:hover {
+            box-shadow: 0 12px 48px rgba(70, 72, 212, 0.15);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .sidebar-active-indicator::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 24px;
+            background: #4648d4;
+            border-radius: 0 4px 4px 0;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen flex">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 rounded-r-xl bg-surface/80 backdrop-blur-xl border-r border-outline-variant/30 shadow-xl shadow-primary/5 flex flex-col py-stack-lg z-50">
+<div class="px-6 mb-10 flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">cloud_done</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed leading-tight">Evolvoria</h1>
+<p class="text-on-surface-variant font-label-sm text-label-sm">Admin Dashboard</p>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 text-primary font-bold bg-primary-container/20 rounded-lg relative sidebar-active-indicator transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container-high/50 transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-label-md text-label-md">Products &amp; Categories</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container-high/50 transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+<span class="font-label-md text-label-md">Orders</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container-high/50 transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-label-md text-label-md">Users</span>
+</a>
+</nav>
+<div class="px-4 mt-auto space-y-2">
+<button class="w-full mb-6 py-3 px-4 bg-primary text-on-primary rounded-xl font-label-md text-label-md flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform indigo-glow">
+                View Storefront
+                <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+</button>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-md text-label-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 flex-1 flex flex-col min-h-screen">
+<!-- TopAppBar -->
+<header class="h-20 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30 sticky top-0 z-40 flex justify-between items-center px-margin-desktop">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-full py-2.5 pl-10 pr-4 text-body-md focus:ring-2 focus:ring-primary/20 transition-all outline-none text-on-surface" placeholder="Search orders, products, or customers..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4 text-on-surface-variant">
+<button class="hover:text-primary transition-colors relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full border-2 border-surface"></span>
+</button>
+<button class="hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="mail">mail</span>
+</button>
+<button class="hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+</div>
+<div class="h-8 w-[1px] bg-outline-variant"></div>
+<div class="flex items-center gap-3">
+<div class="text-right hidden sm:block">
+<p class="font-label-md text-label-md text-on-surface leading-none">Alex Rivera</p>
+<p class="text-[11px] text-on-surface-variant mt-1 uppercase tracking-wider font-bold">Admin</p>
+</div>
+<img alt="Admin Avatar" class="w-10 h-10 rounded-full border-2 border-primary/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuALf3XaxWfO4DbmR4sB26MJmESLzn2zLVa3cp6LPfb1afMKa8yOp7uq8us5EoYMUpVYrYDQtMkr6t1BZFm-qXyvbNsBjH0Qw1MeTqxlVp0bju1Feo7ERTQym-x1aMFJEHxYAyYvlupUgtxMPaZwDy8jxgTSI7OkjNh66JOuoHO6SMcjz9TaeGBes5OY40uuY5b0sM7aG72TN5EmYgp1gpfd6IUVixVZQE7lUS9DowGM7OIHo-5zhsF8otKv1KdauP6fBsFqZhL6njc"/>
+</div>
+</div>
+</header>
+<!-- Dashboard Content -->
+<section class="p-margin-desktop space-y-stack-xl max-w-container-max mx-auto w-full">
+<!-- Welcome Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Dashboard Overview</h2>
+<p class="text-body-lg text-on-surface-variant mt-1">Here's what's happening with Evolvoria today.</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-4 py-2 bg-surface-container border border-outline-variant rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+                        Last 30 Days
+                    </button>
+<button class="px-4 py-2 bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                        Export Report
+                    </button>
+</div>
+</div>
+<!-- Stats At-a-Glance -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Total Revenue -->
+<div class="glass-layer indigo-shadow p-6 rounded-2xl indigo-glow transition-all">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">payments</span>
+</div>
+<span class="text-secondary font-bold text-label-sm flex items-center gap-1 bg-secondary-container/30 px-2 py-1 rounded-full">
+                            +12.5% <span class="material-symbols-outlined text-[14px]">trending_up</span>
+</span>
+</div>
+<p class="text-on-surface-variant font-label-md text-label-md">Total Revenue</p>
+<h3 class="font-headline-md text-headline-md text-on-surface mt-1">$48,295.00</h3>
+</div>
+<!-- Total Orders -->
+<div class="glass-layer indigo-shadow p-6 rounded-2xl indigo-glow transition-all">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 rounded-xl bg-tertiary/10 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
+</div>
+<span class="text-secondary font-bold text-label-sm flex items-center gap-1 bg-secondary-container/30 px-2 py-1 rounded-full">
+                            +8.2% <span class="material-symbols-outlined text-[14px]">trending_up</span>
+</span>
+</div>
+<p class="text-on-surface-variant font-label-md text-label-md">Total Orders</p>
+<h3 class="font-headline-md text-headline-md text-on-surface mt-1">1,240</h3>
+</div>
+<!-- Active Users -->
+<div class="glass-layer indigo-shadow p-6 rounded-2xl indigo-glow transition-all">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person_play</span>
+</div>
+<span class="text-error font-bold text-label-sm flex items-center gap-1 bg-error-container/30 px-2 py-1 rounded-full">
+                            -2.4% <span class="material-symbols-outlined text-[14px]">trending_down</span>
+</span>
+</div>
+<p class="text-on-surface-variant font-label-md text-label-md">Active Users</p>
+<h3 class="font-headline-md text-headline-md text-on-surface mt-1">8,642</h3>
+</div>
+<!-- Inventory Status -->
+<div class="glass-layer indigo-shadow p-6 rounded-2xl indigo-glow transition-all">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 rounded-xl bg-error/10 flex items-center justify-center text-error">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+</div>
+<span class="text-on-surface-variant font-bold text-label-sm px-2 py-1 bg-surface-container rounded-full">
+                            12 Low
+                        </span>
+</div>
+<p class="text-on-surface-variant font-label-md text-label-md">Inventory Status</p>
+<h3 class="font-headline-md text-headline-md text-on-surface mt-1">94% Healthy</h3>
+</div>
+</div>
+<!-- Main Data Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<!-- Recent Orders Table -->
+<div class="lg:col-span-2 glass-layer indigo-shadow rounded-2xl overflow-hidden flex flex-col">
+<div class="p-6 border-b border-outline-variant/30 flex justify-between items-center">
+<h4 class="font-headline-md text-headline-md text-on-surface">Recent Orders</h4>
+<button class="text-primary font-label-md text-label-md hover:underline">View All</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-surface-container-low text-on-surface-variant uppercase text-[11px] font-bold tracking-wider">
+<tr>
+<th class="px-6 py-4">Order ID</th>
+<th class="px-6 py-4">Customer</th>
+<th class="px-6 py-4">Date</th>
+<th class="px-6 py-4">Total</th>
+<th class="px-6 py-4">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/30">
+<tr class="hover:bg-primary/5 transition-colors group">
+<td class="px-6 py-4 font-label-md text-on-surface">#EV-9021</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-[12px] font-bold text-primary">JD</div>
+<span class="font-body-md text-on-surface">Jane Doe</span>
+</div>
+</td>
+<td class="px-6 py-4 text-on-surface-variant">Oct 12, 2023</td>
+<td class="px-6 py-4 font-bold text-on-surface">$249.00</td>
+<td class="px-6 py-4">
+<span class="bg-secondary-container/50 text-secondary text-[12px] font-bold px-3 py-1 rounded-full">Shipped</span>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors group">
+<td class="px-6 py-4 font-label-md text-on-surface">#EV-9020</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-[12px] font-bold text-primary">MS</div>
+<span class="font-body-md text-on-surface">Marcus Smith</span>
+</div>
+</td>
+<td class="px-6 py-4 text-on-surface-variant">Oct 11, 2023</td>
+<td class="px-6 py-4 font-bold text-on-surface">$1,120.00</td>
+<td class="px-6 py-4">
+<span class="bg-primary-container/20 text-primary text-[12px] font-bold px-3 py-1 rounded-full">Processing</span>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors group">
+<td class="px-6 py-4 font-label-md text-on-surface">#EV-9019</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-[12px] font-bold text-primary">SK</div>
+<span class="font-body-md text-on-surface">Sarah K.</span>
+</div>
+</td>
+<td class="px-6 py-4 text-on-surface-variant">Oct 11, 2023</td>
+<td class="px-6 py-4 font-bold text-on-surface">$85.50</td>
+<td class="px-6 py-4">
+<span class="bg-error-container/50 text-error text-[12px] font-bold px-3 py-1 rounded-full">Delayed</span>
+</td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors group">
+<td class="px-6 py-4 font-label-md text-on-surface">#EV-9018</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-[12px] font-bold text-primary">BT</div>
+<span class="font-body-md text-on-surface">Ben Thompson</span>
+</div>
+</td>
+<td class="px-6 py-4 text-on-surface-variant">Oct 10, 2023</td>
+<td class="px-6 py-4 font-bold text-on-surface">$530.00</td>
+<td class="px-6 py-4">
+<span class="bg-secondary-container/50 text-secondary text-[12px] font-bold px-3 py-1 rounded-full">Delivered</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Top Products -->
+<div class="glass-layer indigo-shadow rounded-2xl flex flex-col">
+<div class="p-6 border-b border-outline-variant/30 flex justify-between items-center">
+<h4 class="font-headline-md text-headline-md text-on-surface">Top Products</h4>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">more_vert</button>
+</div>
+<div class="p-6 space-y-6">
+<div class="flex items-center gap-4">
+<img alt="Zenith Smartwatch" class="w-14 h-14 rounded-xl object-cover shadow-sm" data-alt="A premium Zenith Smartwatch with a brushed titanium finish and a dark leather strap, presented in high-key studio lighting on a pristine white surface. The watch face displays a sophisticated UI with indigo accents. The aesthetic is clean, minimalist, and luxurious, matching an Ethereal Tech-Luxury theme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFeTDoHcYFBjec0TnKbjIQj_JO_u_L7Xatt-mFn6aOXJNNlgR70ncxznMjbTzjUwE6nF7NghWUh_plicjYttlaiik1bMo7j3th8WOAZM3kRI-PsuQz41SlQeWGwRjEg0a0YHwWImiQZUfr2iYpegErRfl8cp560E-N03cRbUcLChXVhdrznWflLE2iY94EnrUCaum90GTlsAnt4jo5fbsBYNg8JYoyL6BkCmk_tKFifgmoSoZ2QEqw9BZ88aKA45IN8AytR_NrLPw"/>
+<div class="flex-1">
+<h5 class="font-label-md text-label-md text-on-surface">Zenith Smartwatch</h5>
+<p class="text-on-surface-variant font-label-sm text-label-sm">Tech &amp; Accessories</p>
+</div>
+<div class="text-right">
+<p class="font-bold text-on-surface">$399</p>
+<p class="text-secondary font-bold text-[11px]">842 sold</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<img alt="Evolvoria Pro Headphones" class="w-14 h-14 rounded-xl object-cover shadow-sm" data-alt="Matte charcoal over-ear headphones with plush memory foam earcups and polished metallic hinges. The product is photographed in a soft, atmospheric environment with gentle lavender and indigo lighting highlights. The composition is sleek and professional, conveying high-fidelity audio quality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQvUOqtbpJpzcheJQWf1fejLvsCvZT8T5C0dEaDwOipPrv0rn8JzYuiXjkc8JLXZiJ-e-EiBXdUXaA21yE7_Nsjh_bzCKWAxtdhq6XJNwahUNsckB_hSGtnCCOsJqR_BRgY_jmTx8iaaJ4lORN7jepdfwfbO4VE96F2cIor3jFZIkKnkbi9k3RbZBAMg6VwbwWxNRqjn2B8XGdhdl3UERtG8ZSNhMm2k2ac55k9cMPLOW3lhmQZIhHMMPEZ__izB1p6uaw61ITGoc"/>
+<div class="flex-1">
+<h5 class="font-label-md text-label-md text-on-surface">Pro Headphones</h5>
+<p class="text-on-surface-variant font-label-sm text-label-sm">Audio &amp; Sound</p>
+</div>
+<div class="text-right">
+<p class="font-bold text-on-surface">$249</p>
+<p class="text-secondary font-bold text-[11px]">615 sold</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<img alt="Lumina Desk Lamp" class="w-14 h-14 rounded-xl object-cover shadow-sm" data-alt="A minimalist architectural desk lamp made from matte white aluminum with a touch-sensitive base. The lamp emits a warm, diffused glow in a bright, modern office setting. The style is contemporary and airy, emphasizing clean lines and high-end industrial design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7qRaG4ztkW2_WIWl8E9rGvnxN8AKRtVK6efzzekjls0siquSIK0e5ctXrLx2pYfrklleBwMRxWdYv2zHdaiUXUvq767AoP3ascC6jdKJEEIGaDBvjd-cbefLCYy672h6m7EMwz6A3S7omPnwXmUeoneuuY4AGVFjMHqd-HP9UtwOgvIRurLivVi8-M5GMDNb3GE3QZXm4bmyhqz1yi-cl1-2FbK6IM_Axl3NuT3lQxohPM3ZzbptLONc27VCTxIOyvDjG5xYl4zA"/>
+<div class="flex-1">
+<h5 class="font-label-md text-label-md text-on-surface">Lumina Desk Lamp</h5>
+<p class="text-on-surface-variant font-label-sm text-label-sm">Home &amp; Office</p>
+</div>
+<div class="text-right">
+<p class="font-bold text-on-surface">$129</p>
+<p class="text-secondary font-bold text-[11px]">420 sold</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<img alt="Aerion Sneakers" class="w-14 h-14 rounded-xl object-cover shadow-sm" data-alt="Futuristic lifestyle sneakers featuring a breathable mesh upper in shades of pearl white and translucent indigo soles. The shoes are staged as if floating in mid-air against a soft gradient background. The lighting is ethereal and sharp, highlighting the premium textures and athletic elegance." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpYt-SD-WT17jZwxnqEwgGqtTXDtDEW-9tKIsIQTfLTj3WMTrToMJDMu2poD5SkpoQZIe9_iF5jpDab_mjGKBLls9mR-zhmtOUw2tZeWwir3mLIRg-TR-kCyNJ1zXhidgUwYK3MXnu87tKYf9VgUbRyLAeo3XOSBWh3r0Egu_HdBQS8D7ZfoGocES4oOIQEHseE_i6WNq5F3MDrNitGT0XJ-eekTsVaX2MU3BjXXHlDtgb6eTG_7hqPP_bp3TP0rvLIGFaatH7wzw"/>
+<div class="flex-1">
+<h5 class="font-label-md text-label-md text-on-surface">Aerion Sneakers</h5>
+<p class="text-on-surface-variant font-label-sm text-label-sm">Footwear</p>
+</div>
+<div class="text-right">
+<p class="font-bold text-on-surface">$185</p>
+<p class="text-secondary font-bold text-[11px]">389 sold</p>
+</div>
+</div>
+<button class="w-full py-3 mt-2 border border-primary/20 text-primary rounded-xl font-label-md text-label-md hover:bg-primary/5 transition-colors">
+                            Manage Inventory
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="mt-auto p-margin-desktop text-on-surface-variant font-label-sm text-label-sm border-t border-outline-variant/30 flex justify-between">
+<p>© 2023 Evolvoria Commerce Platform. All rights reserved.</p>
+<div class="flex gap-6">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-primary transition-colors" href="#">System Status</a>
+</div>
+</footer>
+</main>
+<script>
+        // Micro-interactions and subtle effects
+        document.querySelectorAll('.glass-layer').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+
+        // Simulating some dynamic updates or notifications
+        setTimeout(() => {
+            console.log("Dashboard analytics refreshed.");
+        }, 2000);
+    </script>
+</body></html>

@@ -1,0 +1,83 @@
+{% extends 'accounts/user_dash_base.html' %}
+
+{% block dash_title %}My Orders{% endblock %}
+{% block topbar_title %}My Orders{% endblock %}
+
+{% block dash_content %}
+<!-- Page Header -->
+<div class="dash-page-header">
+    <div>
+        <h2>My Orders</h2>
+        <p>Track status and view history of your placed orders</p>
+    </div>
+    <div class="dash-page-actions">
+        <a href="{% url 'all_products' %}" class="btn-dash-outline" style="text-decoration: none;">
+            <span class="material-symbols-outlined">shopping_bag</span>
+            Go to Shop
+        </a>
+    </div>
+</div>
+
+{% if orders %}
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        {% for order in orders %}
+            <div class="dash-panel" style="padding: 1.75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                        <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin: 0; font-family: 'Plus Jakarta Sans', sans-serif;">Order #{{ order.id }}</h3>
+                        
+                        <!-- Status Badges -->
+                        {% if order.status == 'Pending' %}
+                            <span class="status-badge status-pending">
+                                Pending
+                            </span>
+                        {% elif order.status == 'Shipped' %}
+                            <span class="status-badge status-shipped">
+                                Shipped
+                            </span>
+                        {% elif order.status == 'Cancelled' %}
+                            <span class="status-badge status-cancelled">
+                                Cancelled
+                            </span>
+                        {% else %}
+                            <span class="status-badge status-delivered">
+                                Delivered
+                            </span>
+                        {% endif %}
+                    </div>
+                    
+                    <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0;">
+                        Placed on {{ order.created_at|date:"F d, Y @ H:i" }}
+                    </p>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 4px 0 0 0;">
+                        Items count: <span style="font-weight: 600; color: var(--text-primary);">{{ order.items.all|length }}</span>
+                    </p>
+                </div>
+
+                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 10px; margin-left: auto;">
+                    <span style="font-size: 1.35rem; font-weight: 800; color: var(--accent-primary);">${{ order.total_price }}</span>
+                    <a href="{% url 'order_detail' order.id %}" class="btn-dash-primary" style="text-decoration: none; width: auto; padding: 0.5rem 1.25rem; font-size: 0.85rem; border-radius: 8px;">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">explore</span>
+                        Track Order
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <!-- Empty Orders State -->
+    <div class="dash-panel" style="text-align: center; padding: 4rem 2rem;">
+        <div style="width: 70px; height: 70px; background: rgba(70, 72, 212, 0.05); border: 1px solid var(--glass-border); border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 1.5rem auto;">
+            <span class="material-symbols-outlined" style="font-size: 32px; color: var(--text-secondary);">receipt_long</span>
+        </div>
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; font-family: 'Plus Jakarta Sans', sans-serif;">No Orders Placed Yet</h2>
+        <p style="color: var(--text-secondary); font-size: 0.95rem; max-width: 400px; margin: 0 auto 2rem auto;">
+            You haven't placed any orders on your Evolvoria account. Fill your cart and proceed to checkout!
+        </p>
+        <a href="{% url 'all_products' %}" class="btn-dash-primary" style="text-decoration: none; display: inline-flex;">
+            <span class="material-symbols-outlined">shopping_cart</span>
+            Start Shopping
+        </a>
+    </div>
+{% endif %}
+{% endblock %}

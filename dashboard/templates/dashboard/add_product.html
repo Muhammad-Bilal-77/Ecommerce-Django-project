@@ -1,0 +1,103 @@
+{% extends 'dashboard/dash_base.html' %}
+
+{% block dash_title %}Add Product{% endblock %}
+{% block topbar_title %}Add New Product{% endblock %}
+
+{% block dash_content %}
+<!-- Page Header -->
+<div class="dash-page-header">
+    <div>
+        <h2>Add Product</h2>
+        <p>Upload a new item to the store catalog.</p>
+    </div>
+    <div class="dash-page-actions">
+        <a href="{% url 'dashboard_products' %}" class="btn-dash-outline" style="text-decoration: none;">
+            <span class="material-symbols-outlined">arrow_back</span>
+            Back to Products
+        </a>
+    </div>
+</div>
+
+<!-- Form Card -->
+<div class="dash-form-card">
+    <form method="POST" action="{% url 'dashboard_add_product' %}" enctype="multipart/form-data" novalidate style="display: flex; flex-direction: column; gap: 20px;">
+        {% csrf_token %}
+
+        {% if errors.non_field_errors %}
+        <div style="color: var(--accent-error); font-size: 14px; padding: 12px; border: 1px solid rgba(186, 26, 26, 0.2); border-radius: 10px; background: rgba(186, 26, 26, 0.04);">
+            {{ errors.non_field_errors }}
+        </div>
+        {% endif %}
+
+        <div class="form-group" style="margin-bottom: 0;">
+            <label for="name" class="form-label">Product Name</label>
+            <input type="text" id="name" name="name" class="form-control" placeholder="e.g. Wireless Charger" required value="{{ values.name|default:'' }}">
+            {% if errors.name %}<div class="form-error-text">{{ errors.name }}</div>{% endif %}
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="category_id" class="form-label">Category</label>
+                <select id="category_id" name="category_id" class="form-control">
+                    <option value="">-- Choose Category --</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat.id }}" {% if values.category_id == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+                    {% endfor %}
+                </select>
+                {% if errors.category %}<div class="form-error-text">{{ errors.category }}</div>{% endif %}
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="new_category_name" class="form-label">Or Create New Category</label>
+                <input type="text" id="new_category_name" name="new_category_name" class="form-control" placeholder="e.g. Virtual Reality" value="{{ values.new_category_name|default:'' }}">
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="featured_collection_id" class="form-label">Featured Collection (Optional)</label>
+                <select id="featured_collection_id" name="featured_collection_id" class="form-control">
+                    <option value="">-- Choose Collection --</option>
+                    {% for col in collections %}
+                    <option value="{{ col.id }}" {% if values.featured_collection_id == col.id|stringformat:"s" %}selected{% endif %}>{{ col.name }}</option>
+                    {% endfor %}
+                </select>
+                {% if errors.featured_collection %}<div class="form-error-text">{{ errors.featured_collection }}</div>{% endif %}
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="new_collection_name" class="form-label">Or Create New Collection</label>
+                <input type="text" id="new_collection_name" name="new_collection_name" class="form-control" placeholder="e.g. Summer Edition" value="{{ values.new_collection_name|default:'' }}">
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="price" class="form-label">Price ($)</label>
+                <input type="number" step="0.01" id="price" name="price" class="form-control" placeholder="e.g. 29.99" required value="{{ values.price|default:'' }}">
+                {% if errors.price %}<div class="form-error-text">{{ errors.price }}</div>{% endif %}
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="stock" class="form-label">Stock Quantity</label>
+                <input type="number" id="stock" name="stock" class="form-control" placeholder="e.g. 50" required value="{{ values.stock|default:'' }}">
+                {% if errors.stock %}<div class="form-error-text">{{ errors.stock }}</div>{% endif %}
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 0;">
+            <label for="description" class="form-label">Description</label>
+            <textarea id="description" name="description" class="form-control" rows="4" placeholder="Describe this product's features..." required>{{ values.description|default:'' }}</textarea>
+            {% if errors.description %}<div class="form-error-text">{{ errors.description }}</div>{% endif %}
+        </div>
+
+        <div class="form-group" style="margin-bottom: 0;">
+            <label for="image" class="form-label">Product Image</label>
+            <input type="file" id="image" name="image" class="form-control" accept="image/*" style="padding: 10px 14px;">
+            {% if errors.image %}<div class="form-error-text">{{ errors.image }}</div>{% endif %}
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 8px;">
+            <button type="submit" class="btn-dash-primary" style="flex: 1; justify-content: center; padding: 14px;">Create Product</button>
+            <a href="{% url 'dashboard_products' %}" class="btn-dash-outline" style="flex: 1; justify-content: center; padding: 14px; text-decoration: none;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

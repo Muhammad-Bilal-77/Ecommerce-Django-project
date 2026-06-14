@@ -1,0 +1,118 @@
+{% extends 'accounts/user_dash_base.html' %}
+
+{% block dash_title %}Shopping Cart{% endblock %}
+{% block topbar_title %}My Shopping Cart{% endblock %}
+
+{% block dash_content %}
+<!-- Page Header -->
+<div class="dash-page-header">
+    <div>
+        <h2>Shopping Cart</h2>
+        <p>Manage your items and prepare for checkout</p>
+    </div>
+    <div class="dash-page-actions">
+        <a href="{% url 'all_products' %}" class="btn-dash-outline" style="text-decoration: none;">
+            <span class="material-symbols-outlined">shopping_bag</span>
+            Continue Shopping
+        </a>
+    </div>
+</div>
+
+{% if cart.items.all %}
+    <div style="display: flex; gap: 2rem; flex-wrap: wrap; align-items: flex-start;">
+        <!-- Cart Items List (Left Column) -->
+        <div style="flex: 2; min-width: 320px; display: flex; flex-direction: column; gap: 1.5rem; width: 100%;">
+            {% for item in cart.items.all %}
+                <div class="dash-panel" style="padding: 1.5rem; display: flex; flex-direction: row; gap: 1.5rem; align-items: center; flex-wrap: wrap;">
+                    <!-- Product Image -->
+                    <div style="width: 90px; height: 90px; border-radius: 12px; overflow: hidden; background: rgba(0,0,0,0.1); border: 1px solid var(--glass-border); flex-shrink: 0;">
+                        <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+
+                    <!-- Product Info -->
+                    <div style="flex: 1.5; min-width: 150px;">
+                        <a href="{% url 'product_detail' item.product.id %}" style="text-decoration: none; color: inherit;">
+                            <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem; transition: color 0.3s ease; font-family: 'Plus Jakarta Sans', sans-serif;">
+                                {{ item.product.name }}
+                            </h3>
+                        </a>
+                        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 0.5rem;">
+                            Category: {{ item.product.category.name }}
+                        </p>
+                        <span style="font-size: 0.95rem; font-weight: 600; color: var(--text-primary);">${{ item.product.price }} <span style="font-size: 0.8rem; color: var(--text-secondary); font-weight: normal;">each</span></span>
+                    </div>
+
+                    <!-- Quantity Selector Form -->
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <form method="POST" action="{% url 'update_cart' item.id %}" style="display: flex; align-items: center; gap: 8px;">
+                            {% csrf_token %}
+                            <label for="quantity-{{ item.id }}" style="display: none;">Quantity</label>
+                            <input type="number" id="quantity-{{ item.id }}" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" class="form-control" style="width: 70px; padding: 0.4rem 0.6rem; text-align: center; font-size: 0.9rem; background: rgba(255,255,255,0.5); border: 1px solid var(--glass-border); border-radius: 8px;">
+                            <button type="submit" class="btn-dash-outline" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; border-radius: 8px;">
+                                Update
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Subtotal and Remove -->
+                    <div style="text-align: right; min-width: 120px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; margin-left: auto;">
+                        <span style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary);">${{ item.subtotal }}</span>
+                        <a href="{% url 'remove_from_cart' item.id %}" style="color: var(--accent-error); font-size: 0.85rem; text-decoration: none; font-weight: 600; transition: color 0.3s ease; display: inline-flex; align-items: center; gap: 4px;">
+                            <span class="material-symbols-outlined" style="font-size: 16px;">delete</span>
+                            Remove
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Checkout Summary (Right Column) -->
+        <div style="flex: 1; min-width: 300px; width: 100%;">
+            <div class="dash-panel" style="padding: 2rem; position: sticky; top: 24px;">
+                <h2 style="font-size: 1.35rem; font-weight: 700; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem; margin-bottom: 1.5rem; font-family: 'Plus Jakarta Sans', sans-serif;">
+                    Order Summary
+                </h2>
+                
+                <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; font-size: 0.95rem;">
+                    <div style="display: flex; justify-content: space-between; color: var(--text-secondary);">
+                        <span>Total Items</span>
+                        <span style="color: var(--text-primary); font-weight: 600;">{{ cart.items.all|length }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; color: var(--text-secondary);">
+                        <span>Shipping</span>
+                        <span style="color: var(--accent-success); font-weight: 600;">FREE</span>
+                    </div>
+                    <div style="border-top: 1px dashed var(--glass-border); padding-top: 1rem; display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 700; color: var(--text-primary);">
+                        <span>Total Price</span>
+                        <span style="color: var(--accent-primary); font-weight: 800;">${{ cart.total_price }}</span>
+                    </div>
+                </div>
+
+                <a href="{% url 'checkout' %}" class="btn-dash-primary" style="margin-bottom: 1rem; text-decoration: none; display: flex; justify-content: center; width: 100%;">
+                    <span class="material-symbols-outlined">shopping_cart_checkout</span>
+                    Proceed to Checkout
+                </a>
+                
+                <p style="text-align: center; color: var(--text-secondary); font-size: 0.8rem; line-height: 1.4; margin: 0;">
+                    Tax and other shipping charges calculated at checkout. Security updates managed.
+                </p>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <!-- Empty Cart State -->
+    <div class="dash-panel" style="text-align: center; padding: 4rem 2rem;">
+        <div style="width: 70px; height: 70px; background: rgba(70, 72, 212, 0.05); border: 1px solid var(--glass-border); border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 1.5rem auto;">
+            <span class="material-symbols-outlined" style="font-size: 32px; color: var(--text-secondary);">shopping_cart</span>
+        </div>
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; font-family: 'Plus Jakarta Sans', sans-serif;">Your Cart is Empty</h2>
+        <p style="color: var(--text-secondary); font-size: 0.95rem; max-width: 400px; margin: 0 auto 2rem auto;">
+            Looks like you haven't added any products to your cart yet. Explore our high-quality parts to get started!
+        </p>
+        <a href="{% url 'all_products' %}" class="btn-dash-primary" style="text-decoration: none; display: inline-flex;">
+            <span class="material-symbols-outlined">explore</span>
+            Shop Now
+        </a>
+    </div>
+{% endif %}
+{% endblock %}
